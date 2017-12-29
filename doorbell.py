@@ -3,6 +3,7 @@ import os
 import smtplib
 from time import sleep
 import configparser
+from pathlib import Path
 
 
 # config
@@ -38,20 +39,24 @@ GPIO.setup(channel, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 server.sendmail(send_address, email_address1, 'Door bell alerts up')
 
-while True:
-    if GPIO.input(channel):
-        sleep(0.1)
-    else:
-        print('Input was LOW')
-        os.system('mpg123 ' + door_bell_sound)
-        # Send text message through SMS gateway of destination number
-        try:
-            server.sendmail(send_address, email_address1, 'Ding Dong')
-            server.sendmail(send_address, email_address2, 'Ding Dong')
-        except:
-            print('txt error')
-            continue
+def dingdong():
+    print('Input was LOW')
+    os.system('mpg123 ' + door_bell_sound)
+    # Send text message through SMS gateway of destination number
+    try:
+        server.sendmail(send_address, email_address1, 'Ding Dong')
+        server.sendmail(send_address, email_address2, 'Ding Dong')
+    except:
+        print('txt error')
+
+
+GPIO.add_event_detect(channel, GPIO.RISING, callback=dingdong, bouncetime=200)
+
+my_file = Path("stop_loop")
+
+while not my_file.exists():
+    sleep(0.1)
 
 server.sendmail(send_address, email_address1, 'Door bell alerts down.')
 
-# GPIO.cleanup()
+GPIO.cleanup()
