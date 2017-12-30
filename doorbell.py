@@ -20,6 +20,19 @@ send_address = config_parse.get('door_bell_config', 'send_address')
 send_password = config_parse.get('door_bell_config', 'send_password')
 door_bell_sound = config_parse.get('door_bell_config', 'door_bell_sound')
 
+
+def dingdong(ch):
+    if ch == channel:
+        print('Input was LOW')
+        os.system('mpg123 ' + door_bell_sound)
+        # Send text message through SMS gateway of destination number
+        try:
+            server.sendmail(send_address, email_address1, 'Ding Dong')
+            server.sendmail(send_address, email_address2, 'Ding Dong')
+        except:
+            print('txt error')
+
+
 # Use sms gateway provided by mobile carrier:
 # at&t:     number@mms.att.net
 # t-mobile: number@tmomail.net
@@ -28,35 +41,23 @@ door_bell_sound = config_parse.get('door_bell_config', 'door_bell_sound')
 
 # Establish a secure session with gmail's outgoing SMTP server using your gmail account
 server = smtplib.SMTP(smtp_server, smtp_port)
-
 server.starttls()
-
 server.login(send_address, send_password)
-
-GPIO.setmode(GPIO.BCM)
-
-GPIO.setup(channel, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
 server.sendmail(send_address, email_address1, 'Door bell alerts up')
 
-def dingdong():
-    print('Input was LOW')
-    os.system('mpg123 ' + door_bell_sound)
-    # Send text message through SMS gateway of destination number
-    try:
-        server.sendmail(send_address, email_address1, 'Ding Dong')
-        server.sendmail(send_address, email_address2, 'Ding Dong')
-    except:
-        print('txt error')
-
-
-GPIO.add_event_detect(channel, GPIO.RISING, callback=dingdong, bouncetime=200)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(channel, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.add_event_detect(channel, GPIO.FALLING, callback=dingdong, bouncetime=200)
 
 my_file = Path("stop_loop")
 
 while not my_file.exists():
     sleep(0.1)
 
-server.sendmail(send_address, email_address1, 'Door bell alerts down.')
+try:
+    server.sendmail(send_address, email_address1, 'Door bell alerts down.')
+    server.quit()
+except:
+    pass
 
 GPIO.cleanup()
