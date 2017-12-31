@@ -23,16 +23,15 @@ door_bell_sound = config_parse.get('door_bell_config', 'door_bell_sound')
 
 
 def dingdong(ch):
-    if ch == channel:
-        print('Input was LOW')
-        play_obj = wave_obj.play()
-        # Send text message through SMS gateway of destination number
-        try:
-            server.sendmail(send_address, email_address1, 'Ding Dong')
-            server.sendmail(send_address, email_address2, 'Ding Dong')
-        except:
-            print('txt error')
-        play_obj.wait_done()
+    print('Input was LOW')
+    play_obj = wave_obj.play()
+    # Send text message through SMS gateway of destination number
+    try:
+        server.sendmail(send_address, email_address1, 'Ding Dong')
+        server.sendmail(send_address, email_address2, 'Ding Dong')
+    except:
+        print('txt error')
+    play_obj.wait_done()
 
 
 # Use sms gateway provided by mobile carrier:
