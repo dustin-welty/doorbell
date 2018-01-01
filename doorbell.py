@@ -26,7 +26,7 @@ door_bell_sound = config_parse.get('door_bell_config', 'door_bell_sound')
 
 def dingdong(ch):
     if ch == channel:
-        st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+        st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %Hh%Mm%Ss')
         message = 'Ding Done ' + st
         print(message)
         play_obj = wave_obj.play()
@@ -48,7 +48,7 @@ def dingdong(ch):
 server = smtplib.SMTP(smtp_server, smtp_port)
 server.starttls()
 server.login(send_address, send_password)
-time_stamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+time_stamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %Hh%Mm%Ss')
 message = 'Door bell alerts up ' + time_stamp
 print(message)
 server.sendmail(send_address, email_address1, message)
@@ -64,7 +64,7 @@ my_file = Path("stop_loop")
 while not my_file.exists():
     sleep(0.1)
 
-time_stamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+time_stamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %Hh%Mm%Ss')
 message = 'Door bell alerts down ' + time_stamp
 print(message)
 try:
