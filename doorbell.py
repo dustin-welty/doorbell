@@ -5,6 +5,7 @@ from time import sleep
 import configparser
 from pathlib import Path
 import simpleaudio as sa
+import datetime
 
 
 # config
@@ -23,15 +24,17 @@ door_bell_sound = config_parse.get('door_bell_config', 'door_bell_sound')
 
 
 def dingdong(ch):
-    print('Input was LOW')
-    play_obj = wave_obj.play()
-    # Send text message through SMS gateway of destination number
-    try:
-        server.sendmail(send_address, email_address1, 'Ding Dong')
-        server.sendmail(send_address, email_address2, 'Ding Dong')
-    except:
-        print('txt error')
-    play_obj.wait_done()
+    if ch == channel:
+        st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+        st = 'Ding Done ' + st
+        print(st)
+        play_obj = wave_obj.play()
+        # Send text message through SMS gateway of destination number
+        try:
+            server.sendmail(send_address, email_address1 + ';' + email_address2, st)
+        except:
+            print('txt error')
+        play_obj.wait_done()
 
 
 # Use sms gateway provided by mobile carrier:
@@ -44,7 +47,8 @@ def dingdong(ch):
 server = smtplib.SMTP(smtp_server, smtp_port)
 server.starttls()
 server.login(send_address, send_password)
-server.sendmail(send_address, email_address1, 'Door bell alerts up')
+time_stamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+server.sendmail(send_address, email_address1, 'Door bell alerts up ' + time_stamp)
 
 wave_obj = sa.WaveObject.from_wave_file(door_bell_sound)
 
@@ -57,10 +61,14 @@ my_file = Path("stop_loop")
 while not my_file.exists():
     sleep(0.1)
 
+time_stamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
 try:
-    server.sendmail(send_address, email_address1, 'Door bell alerts down.')
-    server.quit()
+    server.sendmail(send_address, email_address1, 'Door bell alerts down ' + time_stamp)
 except:
     pass
 
+try:
+    server.quit()
+except:
+    pass
 GPIO.cleanup()
