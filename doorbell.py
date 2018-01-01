@@ -27,12 +27,12 @@ door_bell_sound = config_parse.get('door_bell_config', 'door_bell_sound')
 def dingdong(ch):
     if ch == channel:
         st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-        st = 'Ding Done ' + st
-        print(st)
+        message = 'Ding Done ' + st
+        print(message)
         play_obj = wave_obj.play()
         # Send text message through SMS gateway of destination number
         try:
-            server.sendmail(send_address, email_address1 + ';' + email_address2, st)
+            server.sendmail(send_address, email_address1 + ';' + email_address2, message)
         except:
             print('txt error')
         play_obj.wait_done()
@@ -49,7 +49,9 @@ server = smtplib.SMTP(smtp_server, smtp_port)
 server.starttls()
 server.login(send_address, send_password)
 time_stamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-server.sendmail(send_address, email_address1, 'Door bell alerts up ' + time_stamp)
+message = 'Door bell alerts up ' + time_stamp
+print(message)
+server.sendmail(send_address, email_address1, message)
 
 wave_obj = sa.WaveObject.from_wave_file(door_bell_sound)
 
@@ -63,8 +65,10 @@ while not my_file.exists():
     sleep(0.1)
 
 time_stamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+message = 'Door bell alerts down ' + time_stamp
+print(message)
 try:
-    server.sendmail(send_address, email_address1, 'Door bell alerts down ' + time_stamp)
+    server.sendmail(send_address, email_address1, message)
 except:
     pass
 
